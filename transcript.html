@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rooftop Intelligence V2 — Roberto C. Rodriguez</title>
+  <style>
+    /* ── Reset & Base ─────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --sky:    #0a0e1a;
+      --deep:   #060911;
+      --gold:   #e8b84b;
+      --gold2:  #f5d07a;
+      --slate:  #1c2340;
+      --cloud:  #cdd8f0;
+      --white:  #ffffff;
+      --dim:    rgba(255,255,255,0.65);
+      --accent: #3a7bd5;
+      --green:  #4ade80;
+      --red:    #f87171;
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--deep);
+      color: var(--white);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── Stars ────────────────────────────────────── */
+    #stars-canvas {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* ── Layout Wrapper ───────────────────────────── */
+    .page {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── Hero ─────────────────────────────────────── */
+    .hero {
+      min-height: 60svh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 4rem 1.5rem 5rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 80% 60% at 50% 0%, #1a2a5e 0%, transparent 70%),
+                  radial-gradient(ellipse 60% 40% at 50% 100%, #0d1526 0%, transparent 80%);
+      z-index: 0;
+    }
+
+    /* Radar pulse orb */
+    .radar-orb {
+      position: absolute;
+      top: 8%;
+      right: 10%;
+      width: clamp(60px, 9vw, 100px);
+      aspect-ratio: 1;
+      border-radius: 50%;
+      background: radial-gradient(circle at 40% 40%, rgba(232,184,75,0.9), rgba(232,184,75,0.3) 60%, transparent 80%);
+      box-shadow: 0 0 0 0 rgba(232,184,75,0.4);
+      animation: radarPulse 3s ease-out infinite;
+      z-index: 1;
+    }
+    .radar-orb::before, .radar-orb::after {
+      content: '';
+      position: absolute;
+      inset: -12px;
+      border-radius: 50%;
+      border: 1px solid rgba(232,184,75,0.25);
+      animation: radarRing 3s ease-out infinite;
+    }
+    .radar-orb::after {
+      inset: -24px;
+      animation-delay: 0.5s;
+    }
+    @keyframes radarPulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(232,184,75,0.4), 0 0 30px 10px rgba(232,184,75,0.2); }
+      50%       { box-shadow: 0 0 0 8px rgba(232,184,75,0.0), 0 0 50px 20px rgba(232,184,75,0.3); }
+    }
+    @keyframes radarRing {
+      0%   { transform: scale(1); opacity: 0.6; }
+      100% { transform: scale(2); opacity: 0; }
+    }
+
+    /* Roofscape at bottom */
+    .roofscape {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      z-index: 1;
+      line-height: 0;
+    }
+    .roofscape svg { width: 100%; height: auto; display: block; }
+
+    /* Hero content */
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.25rem;
+      max-width: 800px;
+    }
+
+    /* Badge */
+    .doc-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(232,184,75,0.12);
+      border: 1px solid rgba(232,184,75,0.4);
+      border-radius: 50px;
+      padding: 0.4rem 1.1rem;
+      font-size: clamp(0.65rem, 1.5vw, 0.75rem);
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold);
+    }
+
+    .hero-eyebrow {
+      font-size: clamp(0.7rem, 2vw, 0.9rem);
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--gold);
+      font-weight: 600;
+    }
+
+    .hero-title {
+      font-size: clamp(2rem, 7vw, 4.5rem);
+      font-weight: 900;
+      line-height: 1.05;
+      text-transform: uppercase;
+      letter-spacing: -0.01em;
+      background: linear-gradient(135deg, #ffffff 30%, var(--gold2) 55%, #ffffff 80%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      background-size: 200% auto;
+      animation: shimmer 4s linear infinite;
+    }
+    @keyframes shimmer {
+      0%   { background-position: 0% center; }
+      100% { background-position: 200% center; }
+    }
+
+    .hero-sub {
+      font-size: clamp(0.9rem, 2.2vw, 1.2rem);
+      color: var(--cloud);
+      max-width: 520px;
+      line-height: 1.6;
+    }
+
+    /* Meta pills */
+    .meta-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      justify-content: center;
+      margin-top: 0.25rem;
+    }
+    .meta-pill {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 50px;
+      padding: 0.3rem 0.9rem;
+      font-size: clamp(0.7rem, 1.5vw, 0.8rem);
+      color: var(--dim);
+      font-weight: 500;
+    }
+    .meta-pill strong { color: var(--white); font-weight: 700; }
+
+    /* ── Divider ─────────────────────────────────── */
+    .section-divider {
+      width: 60px;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      margin: 0 auto;
+    }
+
+    /* ── Sections ─────────────────────────────────── */
+    section {
+      padding: clamp(4rem, 8vw, 6rem) 1.5rem;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .section-tag {
+      font-size: 0.7rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--gold);
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+    }
+
+    .section-title {
+      font-size: clamp(1.6rem, 4vw, 2.4rem);
+      font-weight: 800;
+      margin-bottom: 1.25rem;
+      line-height: 1.2;
+    }
+
+    /* ── Script Card (main flow) ─────────────────── */
+    .script-flow {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      margin-top: 2.5rem;
+      position: relative;
+    }
+    .script-flow::before {
+      content: '';
+      position: absolute;
+      left: 27px;
+      top: 44px;
+      bottom: 44px;
+      width: 2px;
+      background: linear-gradient(180deg, var(--gold) 0%, rgba(232,184,75,0.15) 100%);
+    }
+
+    .script-line {
+      display: flex;
+      gap: 1.25rem;
+      align-items: flex-start;
+      position: relative;
+    }
+    .script-line + .script-line {
+      margin-top: 1.5rem;
+    }
+
+    .script-node {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      flex-shrink: 0;
+      position: relative;
+      z-index: 1;
+      background: linear-gradient(135deg, var(--slate), #2a3560);
+      border: 2px solid rgba(232,184,75,0.5);
+      box-shadow: 0 0 0 4px rgba(232,184,75,0.08);
+    }
+    .script-node.gold {
+      background: linear-gradient(135deg, var(--gold), #c99a20);
+      border-color: var(--gold2);
+    }
+    .script-node.accent {
+      background: linear-gradient(135deg, var(--accent), #2060c0);
+      border-color: rgba(58,123,213,0.6);
+    }
+
+    .script-body {
+      flex: 1;
+      padding-top: 0.75rem;
+    }
+
+    .speaker-tag {
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      font-weight: 800;
+      color: var(--gold);
+      margin-bottom: 0.35rem;
+    }
+    .speaker-tag.owner { color: var(--accent); }
+
+    .speech-bubble {
+      background: linear-gradient(135deg, rgba(28,35,64,0.85), rgba(10,14,26,0.9));
+      border: 1px solid rgba(232,184,75,0.25);
+      border-radius: 0 16px 16px 16px;
+      padding: 1rem 1.25rem;
+      font-size: clamp(0.88rem, 2vw, 0.98rem);
+      color: var(--cloud);
+      line-height: 1.7;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
+    .speech-bubble strong { color: var(--gold); font-weight: 700; }
+    .speech-bubble em { color: var(--dim); font-style: italic; }
+
+    .speech-bubble.wait-note {
+      background: rgba(58,123,213,0.08);
+      border-color: rgba(58,123,213,0.25);
+      font-style: italic;
+      color: var(--dim);
+      font-size: 0.85rem;
+    }
+
+    /* ── Objections ──────────────────────────────── */
+    .objections-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      margin-top: 2.5rem;
+    }
+
+    .objection-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px;
+      overflow: hidden;
+      transition: border-color 0.3s, background 0.3s;
+    }
+    .objection-card:hover {
+      border-color: rgba(232,184,75,0.3);
+      background: rgba(232,184,75,0.03);
+    }
+
+    .objection-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1.1rem 1.4rem;
+      cursor: pointer;
+      user-select: none;
+    }
+    .objection-num {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, rgba(232,184,75,0.2), rgba(201,154,32,0.1));
+      border: 1px solid rgba(232,184,75,0.35);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 800;
+      color: var(--gold);
+      flex-shrink: 0;
+    }
+    .objection-text {
+      flex: 1;
+      font-size: clamp(0.88rem, 2vw, 1rem);
+      font-weight: 700;
+      color: var(--white);
+    }
+    .objection-chevron {
+      font-size: 0.75rem;
+      color: var(--dim);
+      transition: transform 0.3s;
+    }
+    .objection-card.open .objection-chevron { transform: rotate(180deg); }
+
+    .objection-response {
+      display: none;
+      padding: 0 1.4rem 1.4rem;
+    }
+    .objection-response.open { display: block; }
+
+    .response-bubble {
+      background: rgba(255,255,255,0.04);
+      border-left: 3px solid var(--gold);
+      border-radius: 0 12px 12px 12px;
+      padding: 1rem 1.25rem;
+      font-size: clamp(0.85rem, 2vw, 0.95rem);
+      color: var(--cloud);
+      line-height: 1.75;
+    }
+    .response-bubble strong { color: var(--gold); font-weight: 700; }
+
+    /* ── Power Pivots ────────────────────────────── */
+    .pivots-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-top: 2.5rem;
+    }
+
+    .pivot-card {
+      display: grid;
+      grid-template-columns: 1fr 1.6fr;
+      gap: 0;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px;
+      overflow: hidden;
+      transition: border-color 0.3s, transform 0.3s;
+    }
+    .pivot-card:hover {
+      border-color: rgba(232,184,75,0.3);
+      transform: translateX(4px);
+    }
+
+    .pivot-target {
+      padding: 1.1rem 1.25rem;
+      background: rgba(232,184,75,0.06);
+      border-right: 1px solid rgba(232,184,75,0.15);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .pivot-icon {
+      font-size: 1.4rem;
+      flex-shrink: 0;
+    }
+    .pivot-label {
+      font-size: clamp(0.8rem, 1.8vw, 0.9rem);
+      font-weight: 800;
+      color: var(--gold);
+      line-height: 1.3;
+    }
+
+    .pivot-move {
+      padding: 1.1rem 1.25rem;
+      font-size: clamp(0.82rem, 1.8vw, 0.9rem);
+      color: var(--cloud);
+      line-height: 1.65;
+    }
+    .pivot-move strong { color: var(--white); font-weight: 700; }
+
+    @media (max-width: 600px) {
+      .pivot-card { grid-template-columns: 1fr; }
+      .pivot-target { border-right: none; border-bottom: 1px solid rgba(232,184,75,0.15); }
+    }
+
+    /* ── Close Scripts ───────────────────────────── */
+    .close-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      margin-top: 2.5rem;
+    }
+
+    .close-card {
+      position: relative;
+      background: linear-gradient(135deg, rgba(28,35,64,0.9), rgba(10,14,26,0.95));
+      border: 1px solid rgba(232,184,75,0.3);
+      border-radius: 20px;
+      padding: clamp(1.5rem, 4vw, 2rem) clamp(1.5rem, 4vw, 2.5rem);
+      box-shadow: 0 8px 40px rgba(0,0,0,0.4);
+      overflow: hidden;
+    }
+    .close-card::before {
+      content: '';
+      position: absolute;
+      top: -40px; left: -40px;
+      width: 150px; height: 150px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(232,184,75,0.1) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .close-type {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: linear-gradient(135deg, var(--gold), #c99a20);
+      color: #0a0e1a;
+      font-size: clamp(0.62rem, 1.3vw, 0.72rem);
+      font-weight: 800;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      padding: 0.28rem 0.85rem;
+      border-radius: 50px;
+      margin-bottom: 1rem;
+    }
+    .close-type.urgency {
+      background: linear-gradient(135deg, #f87171, #c0392b);
+      color: #fff;
+    }
+    .close-type.voicemail {
+      background: linear-gradient(135deg, var(--accent), #2060c0);
+      color: #fff;
+    }
+
+    .close-text {
+      font-size: clamp(0.9rem, 2vw, 1.02rem);
+      color: var(--cloud);
+      line-height: 1.75;
+    }
+    .close-text strong { color: var(--gold); font-weight: 700; }
+    .close-text em { color: var(--dim); }
+
+    /* ── Intelligence Footer Card ─────────────────── */
+    .intel-card {
+      display: flex;
+      align-items: flex-start;
+      gap: 1.5rem;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px;
+      padding: 1.75rem;
+      max-width: 620px;
+    }
+    .intel-avatar {
+      width: 56px;
+      height: 56px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--accent), #2060c0);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      flex-shrink: 0;
+    }
+    .intel-name {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--white);
+      margin-bottom: 0.2rem;
+    }
+    .intel-role {
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      font-weight: 600;
+      margin-bottom: 0.6rem;
+    }
+    .intel-note {
+      font-size: 0.9rem;
+      color: var(--dim);
+      line-height: 1.65;
+    }
+
+    /* ── Footer ──────────────────────────────────── */
+    footer {
+      border-top: 1px solid rgba(255,255,255,0.06);
+      text-align: center;
+      padding: 2.5rem 1.5rem;
+      color: rgba(255,255,255,0.3);
+      font-size: 0.8rem;
+      line-height: 1.8;
+    }
+    footer strong { color: rgba(255,255,255,0.55); }
+
+    /* ── Floating particles ──────────────────────── */
+    .particle {
+      position: fixed;
+      width: 4px; height: 4px;
+      border-radius: 50%;
+      background: var(--gold);
+      opacity: 0;
+      pointer-events: none;
+      z-index: 0;
+      animation: floatUp var(--dur, 8s) var(--delay, 0s) ease-in infinite;
+    }
+    @keyframes floatUp {
+      0%   { opacity: 0; transform: translateY(0) scale(0.5); }
+      10%  { opacity: 0.7; }
+      80%  { opacity: 0.2; }
+      100% { opacity: 0; transform: translateY(-90vh) scale(0); }
+    }
+
+    /* ── Scroll reveal ───────────────────────────── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: none;
+    }
+
+    /* ── Responsive ──────────────────────────────── */
+    @media (max-width: 480px) {
+      .radar-orb { top: 4%; right: 5%; }
+      .intel-card { flex-direction: column; }
+      .script-flow::before { left: 26px; }
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="stars-canvas"></canvas>
+<div id="particles"></div>
+
+<div class="page">
+
+  <!-- ── HERO ──────────────────────────────────────── -->
+  <div class="hero">
+    <div class="radar-orb"></div>
+
+    <div class="hero-content">
+      <div class="doc-badge">⚡ Rooftop Intelligence V2</div>
+
+      <div class="hero-eyebrow">High-Conviction Close — 09/24/24 Hail Recovery</div>
+
+      <h1 class="hero-title">The Roberto<br>C. Rodriguez<br>Script</h1>
+
+      <p class="hero-sub">
+        Heavenly Roofing LLC — Neighborhood Authority Approach.<br>Springlake Drive &amp; Woods Drive residents.
+      </p>
+
+      <div class="meta-pills">
+        <span class="meta-pill">📍 <strong>OKC</strong></span>
+        <span class="meta-pill">🌩️ <strong>3-Inch Hail</strong> · 80 MPH Winds</span>
+        <span class="meta-pill">📅 <strong>Event:</strong> September 24, 2024</span>
+        <span class="meta-pill">🎯 <strong>Version 2</strong> — High-Conviction</span>
+      </div>
+    </div>
+
+    <!-- Roofscape silhouette -->
+    <div class="roofscape">
+      <svg viewBox="0 0 1440 180" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+        <path d="M0,180 L0,120 L60,80 L120,120 L140,100 L160,50 L180,100 L200,120 L260,80 L280,90 L300,60 L320,90 L340,80 L400,120 L440,90 L460,55 L480,90 L500,80 L560,120 L600,95 L620,50 L640,95 L680,70 L700,110 L750,80 L780,115 L820,75 L840,40 L860,75 L900,110 L940,85 L960,55 L980,85 L1020,100 L1060,65 L1080,30 L1100,65 L1140,95 L1180,70 L1200,100 L1240,75 L1280,105 L1320,80 L1360,110 L1400,85 L1440,120 L1440,180 Z"
+              fill="#060911"/>
+        <rect x="450" y="30" width="20" height="30" fill="#060911"/>
+        <rect x="447" y="28" width="26" height="6" fill="#060911"/>
+        <rect x="1070" y="10" width="22" height="30" fill="#060911"/>
+        <rect x="1067" y="8" width="28" height="6" fill="#060911"/>
+        <rect x="270" y="95" width="12" height="9" rx="1" fill="rgba(232,184,75,0.7)"/>
+        <rect x="610" y="70" width="12" height="9" rx="1" fill="rgba(232,184,75,0.5)"/>
+        <rect x="850" y="55" width="12" height="9" rx="1" fill="rgba(232,184,75,0.7)"/>
+        <rect x="1090" y="45" width="12" height="9" rx="1" fill="rgba(232,184,75,0.6)"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- ── MAIN SCRIPT ────────────────────────────────── -->
+  <section class="reveal">
+    <p class="section-tag">📞 The Neighborhood Authority Script</p>
+    <h2 class="section-title">Primary Approach<br><span style="color:var(--gold)">Speak with Calm Confidence</span></h2>
+    <p style="color:var(--dim);font-size:0.9rem;line-height:1.65;margin-bottom:0.5rem;">You are the expert doing them a favor. Springlake Drive and Woods Drive residents.</p>
+    <div class="section-divider" style="margin-bottom:0"></div>
+
+    <div class="script-flow">
+
+      <!-- Opener -->
+      <div class="script-line">
+        <div class="script-node gold">📞</div>
+        <div class="script-body">
+          <div class="speaker-tag">Roberto — Opener</div>
+          <div class="speech-bubble">
+            "Hello, may I speak with <strong>[Owner Name]</strong>?"
+          </div>
+        </div>
+      </div>
+
+      <!-- Wait -->
+      <div class="script-line">
+        <div class="script-node accent">⏸</div>
+        <div class="script-body">
+          <div class="speaker-tag owner">Pause</div>
+          <div class="speech-bubble wait-note">
+            Wait for response before continuing.
+          </div>
+        </div>
+      </div>
+
+      <!-- Intro -->
+      <div class="script-line">
+        <div class="script-node gold">👤</div>
+        <div class="script-body">
+          <div class="speaker-tag">Roberto — Introduction</div>
+          <div class="speech-bubble">
+            "Hi <strong>[Owner Name]</strong>, this is Roberto Rodriguez — I'm the owner of Heavenly Roofing here in OKC. I'll be brief because I know your time is valuable."
+          </div>
+        </div>
+      </div>
+
+      <!-- Storm data -->
+      <div class="script-line">
+        <div class="script-node gold">🌩️</div>
+        <div class="script-body">
+          <div class="speaker-tag">Roberto — Storm Data</div>
+          <div class="speech-bubble">
+            "My storm-tracking system flagged your address at <strong>[Full Address]</strong> as sitting directly inside the highest-intensity damage corridor from the <strong>September 24th event</strong>. I'm talking about a verified <strong>3-inch hail strike zone</strong> — that's not a generalization. Your specific block showed up in what meteorologists call a <strong>'purple-band' impact zone</strong>, which is the most severe classification."
+          </div>
+        </div>
+      </div>
+
+      <!-- Hidden damage -->
+      <div class="script-line">
+        <div class="script-node gold">🔍</div>
+        <div class="script-body">
+          <div class="speaker-tag">Roberto — Hidden Damage Warning</div>
+          <div class="speech-bubble">
+            "Here's what most people don't know: with stones that size driven by 80 MPH winds, the damage is almost never visible from the ground. It shows up as a slow leak <strong>6 to 18 months later</strong> — right when your insurance claim window has closed and the repair comes entirely out of your pocket. <strong>That's the window we're in right now.</strong>"
+          </div>
+        </div>
+      </div>
+
+      <!-- Social proof -->
+      <div class="script-line">
+        <div class="script-node gold">📊</div>
+        <div class="script-body">
+          <div class="speaker-tag">Roberto — Social Proof + Offer</div>
+          <div class="speech-bubble">
+            "I've already documented damage on <strong>[#] homes on your street</strong> this week. I'm going to be right there on <strong>[Thursday/Friday]</strong> to finish out the block, and I can squeeze in a complimentary, 15-minute photo-documented <strong>'Roof Health Audit'</strong> for you — no charge, no obligation, zero pressure."
+          </div>
+        </div>
+      </div>
+
+      <!-- Value prop -->
+      <div class="script-line">
+        <div class="script-node gold">💎</div>
+        <div class="script-body">
+          <div class="speaker-tag">Roberto — Value Proposition</div>
+          <div class="speech-bubble">
+            "The report gives you a <strong>permanent insurance record</strong>. If there's nothing there, I'll tell you straight and you go on with your day. But if there <em>is</em> damage — and statistically with a 3-inch strike at 80 MPH there almost certainly is — you'll have <strong>dated photographic evidence before the claim window closes</strong>. That documentation alone is worth thousands of dollars."
+          </div>
+        </div>
+      </div>
+
+      <!-- Close question -->
+      <div class="script-line">
+        <div class="script-node gold">✅</div>
+        <div class="script-body">
+          <div class="speaker-tag">Roberto — Close Question</div>
+          <div class="speech-bubble">
+            "Does <strong>[Morning]</strong> or <strong>[Afternoon]</strong> work better for you on <strong>[Day]</strong>?"
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── OBJECTIONS ─────────────────────────────────── -->
+  <section class="reveal" style="border-top:1px solid rgba(255,255,255,0.06)">
+    <p class="section-tag">🛡 Objection Handling</p>
+    <h2 class="section-title">Hold the Frame<br><span style="color:var(--gold)">Every Objection Has an Answer</span></h2>
+    <div class="section-divider" style="margin-bottom:0"></div>
+
+    <div class="objections-grid">
+
+      <div class="objection-card" onclick="toggleObj(this)">
+        <div class="objection-header">
+          <div class="objection-num">1</div>
+          <div class="objection-text">"I don't see any damage."</div>
+          <span class="objection-chevron">▼</span>
+        </div>
+        <div class="objection-response">
+          <div class="response-bubble">
+            "That's exactly what I'd expect you to say, and I mean that respectfully — because <strong>3-inch wind-driven hail is designed to hide</strong>. The impact doesn't split shingles. It fractures the fiberglass matting <em>underneath</em> the granule surface. From the ground, your roof looks perfectly fine. From 10 feet up with a trained eye and a high-resolution camera, it tells a completely different story. Seven out of ten homes I've inspected this week on your street looked fine from the driveway too. Three of them had <strong>$18,000 to $35,000 in documented damage</strong>. This is exactly why the inspection exists — to find what you can't see."
+          </div>
+        </div>
+      </div>
+
+      <div class="objection-card" onclick="toggleObj(this)">
+        <div class="objection-header">
+          <div class="objection-num">2</div>
+          <div class="objection-text">"I already have a roofing guy."</div>
+          <span class="objection-chevron">▼</span>
+        </div>
+        <div class="objection-response">
+          <div class="response-bubble">
+            "That's great, honestly — means you already understand the value of a good contractor relationship. Here's my only ask: my inspection is free, it's specific to the September 24th storm, and I'll hand you a <strong>photo-documented report with timestamped imagery</strong>. Take it to your guy if you want. Compare notes. Use it with your insurance company. It costs you nothing and gives you a second set of professional eyes on a storm that was genuinely catastrophic. Most homeowners I talk to are glad they didn't skip this step — even when they already had someone."
+          </div>
+        </div>
+      </div>
+
+      <div class="objection-card" onclick="toggleObj(this)">
+        <div class="objection-header">
+          <div class="objection-num">3</div>
+          <div class="objection-text">"I'm too busy right now."</div>
+          <span class="objection-chevron">▼</span>
+        </div>
+        <div class="objection-response">
+          <div class="response-bubble">
+            "<strong>[Owner Name]</strong>, I completely respect that. Here's the good news — <strong>you don't need to be home</strong>. I can complete the exterior assessment, photograph every impact point with GPS-tagged, high-resolution imagery, and email you a full 'Roof Health Report' by end of day. The only thing I need from you right now is permission to walk the exterior. Takes me 15 minutes, costs you nothing, and gives you documentation that could be worth tens of thousands if your adjuster comes knocking. I can be there Tuesday or Wednesday — which is cleaner for you?"
+          </div>
+        </div>
+      </div>
+
+      <div class="objection-card" onclick="toggleObj(this)">
+        <div class="objection-header">
+          <div class="objection-num">4</div>
+          <div class="objection-text">"I'm going to wait and see."</div>
+          <span class="objection-chevron">▼</span>
+        </div>
+        <div class="objection-response">
+          <div class="response-bubble">
+            "I hear you. And if this were a minor storm, waiting would be the right call. But here's the risk with this particular event: the insurance claim window in Oklahoma is typically <strong>12 months from the date of loss</strong>. After that, it becomes a maintenance issue — not a storm claim. <strong>The difference is who pays.</strong> Right now the storm pays. Six months from now, you pay. All I'm asking for is 15 minutes of your time to make sure you don't accidentally give up a claim you're fully entitled to. That's it."
+          </div>
+        </div>
+      </div>
+
+      <div class="objection-card" onclick="toggleObj(this)">
+        <div class="objection-header">
+          <div class="objection-num">5</div>
+          <div class="objection-text">"How did you get my number?"</div>
+          <span class="objection-chevron">▼</span>
+        </div>
+        <div class="objection-response">
+          <div class="response-bubble">
+            "Completely fair question. My company uses <strong>licensed property data and storm-impact mapping</strong> to identify high-probability damage zones. When a catastrophic event like 09/24 hits, I use that data to proactively reach out to homeowners in the impact corridor — because most people never know they have a valid claim until it's too late. I'd rather make one uncomfortable phone call than have a homeowner find out 8 months from now that their roof was damaged and their window is closed."
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── POWER PIVOTS ────────────────────────────────── -->
+  <section class="reveal" style="border-top:1px solid rgba(255,255,255,0.06)">
+    <p class="section-tag">💎 Personalized Power Pivots</p>
+    <h2 class="section-title">Target-Specific<br><span style="color:var(--gold)">Power Moves for Roberto</span></h2>
+    <div class="section-divider" style="margin-bottom:0"></div>
+
+    <div class="pivots-grid">
+
+      <div class="pivot-card">
+        <div class="pivot-target">
+          <span class="pivot-icon">🏡</span>
+          <div class="pivot-label">High Tenure<br><span style="font-weight:500;color:var(--dim)">(15+ Years)</span></div>
+        </div>
+        <div class="pivot-move">
+          "You've been in this home since <strong>[Year]</strong> — you've built real equity here. A hidden structural defect from a storm like 09/24 is exactly the kind of thing that surfaces <em>at closing</em> on a future sale and kills the deal. Let's make sure your investment is documented and protected."
+        </div>
+      </div>
+
+      <div class="pivot-card">
+        <div class="pivot-target">
+          <span class="pivot-icon">💼</span>
+          <div class="pivot-label">LLC /<br>Business Owner</div>
+        </div>
+        <div class="pivot-move">
+          "As a fellow business owner, I know you think in terms of <strong>risk exposure</strong>. An undocumented storm claim that becomes a $30,000 out-of-pocket repair 18 months from now is a balance sheet problem. This inspection is your risk audit — and it's free."
+        </div>
+      </div>
+
+      <div class="pivot-card">
+        <div class="pivot-target">
+          <span class="pivot-icon">📍</span>
+          <div class="pivot-label">Springlake /<br>Woods Drive</div>
+        </div>
+        <div class="pivot-move">
+          "I'm specifically focused on the <strong>[Woods/Springlake] corridor</strong> because the dual-pol radar showed the purple-band impact zone running directly over your rooftops during the September 24th event. The data is as specific as your address."
+        </div>
+      </div>
+
+      <div class="pivot-card">
+        <div class="pivot-target">
+          <span class="pivot-icon">🔑</span>
+          <div class="pivot-label">Recent Purchase<br><span style="font-weight:500;color:var(--dim)">(Under 3 Years)</span></div>
+        </div>
+        <div class="pivot-move">
+          "With a relatively recent purchase, the last thing you want is a hidden storm defect surfacing as a leak that your homeowner's insurance treats as a <strong>pre-existing condition</strong>. This audit protects your investment and gives you a clean baseline record."
+        </div>
+      </div>
+
+      <div class="pivot-card">
+        <div class="pivot-target">
+          <span class="pivot-icon">👴</span>
+          <div class="pivot-label">Senior<br>Homeowner</div>
+        </div>
+        <div class="pivot-move">
+          "I want to be straightforward with you, <strong>[Owner Name]</strong> — I'm calling because I've been in this neighborhood all week, and I've seen too many homeowners your age miss their claim window on serious damage simply because no one told them. I don't want that to happen to you."
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── THE CLOSE ──────────────────────────────────── -->
+  <section class="reveal" style="border-top:1px solid rgba(255,255,255,0.06)">
+    <p class="section-tag">✅ The Close</p>
+    <h2 class="section-title">Plant the Flag<br><span style="color:var(--gold)">Lock in the Appointment</span></h2>
+    <div class="section-divider" style="margin-bottom:0"></div>
+
+    <div class="close-cards">
+
+      <div class="close-card">
+        <div class="close-type">✅ Standard Close</div>
+        <p class="close-text">
+          "Perfect, <strong>[Owner Name]</strong>. I've got you on the calendar for <strong>[Time]</strong> on <strong>[Day]</strong>. You don't need to do anything — I'll be in the Heavenly Roofing truck, I'll complete the exterior audit, and I'll send you a full photo report within 24 hours. If the roof is clean, you'll know it's clean. If it's not, you'll have exactly what you need before that claim window closes. <em>I look forward to meeting you.</em>"
+        </p>
+      </div>
+
+      <div class="close-card">
+        <div class="close-type urgency">⚡ Urgency Close</div>
+        <p class="close-text">
+          "I want to be honest with you — I've got <strong>four slots left this week</strong> and I'm already overbooked on your street. I can hold one for you, but I need to know by <strong>[today/tomorrow]</strong> so I can plan my route. <em>Can I put your name on it?</em>"
+        </p>
+      </div>
+
+      <div class="close-card">
+        <div class="close-type voicemail">📱 Voicemail Drop</div>
+        <p class="close-text">
+          "Hi <strong>[Owner Name]</strong>, this is Roberto Rodriguez, owner of Heavenly Roofing in OKC. I'm calling because your address on <strong>[Street Name]</strong> flagged in my storm-impact system for the September 24th catastrophic hail event — specifically the <strong>3-inch, 80 MPH strike zone</strong>. I'm on your street this week doing complimentary roof audits for your neighbors, and I have one slot open. <strong>This is time-sensitive</strong> — the insurance claim window is running. Please call me back at <strong>[Phone Number]</strong> and I'll get you taken care of. Thank you."
+        </p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── INTEL FOOTER ───────────────────────────────── -->
+  <section class="reveal" style="border-top:1px solid rgba(255,255,255,0.07);padding-bottom:3rem">
+    <p class="section-tag">Behind the Build</p>
+    <div class="intel-card">
+      <div class="intel-avatar">🤖</div>
+      <div>
+        <div class="intel-name">Lead Machine Intelligence</div>
+        <div class="intel-role">Script Architect — V2 High-Conviction Build</div>
+        <p class="intel-note">
+          This script was prepared specifically for Roberto C. Rodriguez and Heavenly Roofing LLC — optimized for the September 24, 2024 catastrophic hail event in the OKC metro. All objection handling, power pivots, and close sequences are calibrated for maximum homeowner resonance in the Springlake Drive and Woods Drive corridors.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── FOOTER ─────────────────────────────────────── -->
+  <footer>
+    <div style="font-size:1.2rem;margin-bottom:0.5rem">🏠</div>
+    <strong>Heavenly Roofing LLC</strong> — Roberto C. Rodriguez, Owner &amp; Operator<br>
+    <a href="mailto:Politroche13@gmail.com" style="color:var(--gold);text-decoration:none">Politroche13@gmail.com</a>
+    &nbsp;·&nbsp;
+    <a href="tel:+14059737090" style="color:var(--gold);text-decoration:none">+1 (405) 973-7090</a><br><br>
+    <span style="font-size:0.7rem;opacity:0.4">Rooftop Intelligence V2 — Prepared for Roberto C. Rodriguez. © 2026 Heavenly Roofing LLC. Developed by Pedro M. Dominguez.</span>
+  </footer>
+
+</div><!-- /.page -->
+
+<script>
+  /* ── Stars Canvas ────────────────────────────────── */
+  (function () {
+    const canvas = document.getElementById('stars-canvas');
+    const ctx = canvas.getContext('2d');
+    let stars = [];
+    let W, H;
+
+    function resize() {
+      W = canvas.width  = window.innerWidth;
+      H = canvas.height = window.innerHeight;
+    }
+    function initStars() {
+      stars = [];
+      const count = Math.floor((W * H) / 3000);
+      for (let i = 0; i < count; i++) {
+        stars.push({
+          x: Math.random() * W,
+          y: Math.random() * H,
+          r: Math.random() * 1.6 + 0.2,
+          a: Math.random(),
+          speed: Math.random() * 0.008 + 0.002,
+          phase: Math.random() * Math.PI * 2,
+        });
+      }
+    }
+    function draw(t) {
+      ctx.clearRect(0, 0, W, H);
+      stars.forEach(s => {
+        const alpha = 0.3 + 0.7 * (0.5 + 0.5 * Math.sin(t * s.speed + s.phase));
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255,255,255,${alpha})`;
+        ctx.fill();
+      });
+      requestAnimationFrame(draw);
+    }
+    resize();
+    initStars();
+    window.addEventListener('resize', () => { resize(); initStars(); });
+    requestAnimationFrame(draw);
+  })();
+
+  /* ── Floating Particles ──────────────────────────── */
+  (function () {
+    const container = document.getElementById('particles');
+    for (let i = 0; i < 18; i++) {
+      const p = document.createElement('div');
+      p.className = 'particle';
+      p.style.left = Math.random() * 100 + 'vw';
+      p.style.bottom = '-10px';
+      p.style.setProperty('--dur', (6 + Math.random() * 10) + 's');
+      p.style.setProperty('--delay', (Math.random() * 8) + 's');
+      p.style.width = p.style.height = (2 + Math.random() * 4) + 'px';
+      container.appendChild(p);
+    }
+  })();
+
+  /* ── Scroll Reveal ───────────────────────────────── */
+  (function () {
+    const els = document.querySelectorAll('.reveal');
+    const io = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          io.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.08 });
+    els.forEach(el => io.observe(el));
+  })();
+
+  /* ── Objection Toggle ────────────────────────────── */
+  function toggleObj(card) {
+    const response = card.querySelector('.objection-response');
+    const isOpen = card.classList.contains('open');
+    // close all
+    document.querySelectorAll('.objection-card.open').forEach(c => {
+      c.classList.remove('open');
+      c.querySelector('.objection-response').classList.remove('open');
+    });
+    if (!isOpen) {
+      card.classList.add('open');
+      response.classList.add('open');
+    }
+  }
+</script>
+</body>
+</html>
