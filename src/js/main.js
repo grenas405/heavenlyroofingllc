@@ -4,45 +4,64 @@ import { smoothScroll, printGreeting } from './utils.js';
 document.addEventListener('DOMContentLoaded', () => {
     printGreeting();
 
-    // Attach smooth scroll to all anchor links
+    // Smooth scroll for all anchor links
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', (e) => {
             e.preventDefault();
             const targetId = anchor.getAttribute('href');
             smoothScroll(targetId);
+            // Close mobile nav if open
+            navList.classList.remove('open');
         });
     });
 
-    // Add scroll effects to header
-    const header = document.querySelector('.header');
+    // Header scroll styling (dark theme aware)
+    const header = document.getElementById('header');
     window.addEventListener('scroll', () => {
-        if (window.scrollY > 50) {
-            header.style.padding = '10px 0';
-            header.style.backgroundColor = 'rgba(255, 255, 255, 0.95)';
-        } else {
-            header.style.padding = '0';
-            header.style.backgroundColor = '#fff';
-        }
+        header.classList.toggle('scrolled', window.scrollY > 50);
     });
 
-    // Animate service cards on scroll (Simple Intersection Observer)
-    const observerOptions = {
-        threshold: 0.1
-    };
+    // Hamburger mobile nav toggle
+    const hamburger = document.getElementById('hamburger');
+    const navList = document.getElementById('nav-list');
+    if (hamburger && navList) {
+        hamburger.addEventListener('click', () => {
+            navList.classList.toggle('open');
+        });
+    }
 
+    // Intersection Observer for scroll-reveal animations
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
-                entry.target.style.opacity = '1';
-                entry.target.style.transform = 'translateY(0)';
+                entry.target.classList.add('visible');
             }
         });
-    }, observerOptions);
+    }, { threshold: 0.1 });
 
-    document.querySelectorAll('.service-card').forEach(card => {
-        card.style.opacity = '0';
-        card.style.transform = 'translateY(30px)';
-        card.style.transition = 'opacity 0.6s ease-out, transform 0.6s ease-out';
-        observer.observe(card);
+    document.querySelectorAll('.service-card, .stat-card, .testimonial-card, .about-card, .contact-method').forEach((el, i) => {
+        el.classList.add('reveal');
+        el.style.transitionDelay = `${(i % 4) * 0.1}s`;
+        observer.observe(el);
     });
+
+    // Contact form — simple UX feedback (no backend)
+    const form = document.getElementById('contact-form');
+    if (form) {
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const btn = form.querySelector('button[type="submit"]');
+            btn.textContent = 'Request Sent!';
+            btn.disabled = true;
+            btn.style.background = '#22c55e';
+            btn.style.color = '#fff';
+            setTimeout(() => {
+                btn.textContent = 'Send My Request';
+                btn.disabled = false;
+                btn.style.background = '';
+                btn.style.color = '';
+                form.reset();
+            }, 4000);
+        });
+    }
 });
