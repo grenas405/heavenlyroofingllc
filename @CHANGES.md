@@ -1,3 +1,19 @@
+## [2026-03-11] - Teaser Landing Page (teaser.html)
+
+### New File: teaser.html
+- Created standalone promotional teaser page (all HTML/CSS/JS in one file)
+- **Hero:** Animated starfield canvas, moon glow pulse, gold shimmer title, roof silhouette SVG with lit windows
+- **Countdown timer:** Live 60-day countdown to launch date
+- **Services preview grid:** 6 service cards (Replacement, Inspection, Repair, Storm, Commercial, Gutters)
+- **Progress bar:** Animated fill showing 65% website completion with milestone chips
+- **Owner card:** Roberto C. Rodriguez featured as Owner & Operator with email and phone contact links
+- **Developer note:** Pedro M. Dominguez credited as web developer
+- **Notify form:** Email capture form with validation
+- **Floating gold particles + scroll reveal animations**
+- Fully mobile responsive
+
+---
+
 ## [2026-03-11] - Dark Red + Black Rebrand + Anime.js UI Upgrade
 
 ### Color Scheme

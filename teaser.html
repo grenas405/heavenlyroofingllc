@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Heavenly Roofing LLC — Coming Soon</title>
+  <style>
+    /* ── Reset & Base ─────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --sky:    #0a0e1a;
+      --deep:   #060911;
+      --gold:   #e8b84b;
+      --gold2:  #f5d07a;
+      --slate:  #1c2340;
+      --cloud:  #cdd8f0;
+      --white:  #ffffff;
+      --dim:    rgba(255,255,255,0.65);
+      --accent: #3a7bd5;
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--deep);
+      color: var(--white);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── Stars ────────────────────────────────────── */
+    #stars-canvas {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* ── Layout Wrapper ───────────────────────────── */
+    .page {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── Hero ─────────────────────────────────────── */
+    .hero {
+      min-height: 100svh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 2rem 1.5rem 4rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Sky gradient */
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 80% 60% at 50% 0%, #1a2a5e 0%, transparent 70%),
+                  radial-gradient(ellipse 60% 40% at 50% 100%, #0d1526 0%, transparent 80%);
+      z-index: 0;
+    }
+
+    /* Moon glow */
+    .moon {
+      position: absolute;
+      top: 6%;
+      right: 12%;
+      width: clamp(70px, 10vw, 120px);
+      aspect-ratio: 1;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #fff9e6, #f5d07a 40%, #e8b84b 70%, #c99a20);
+      box-shadow: 0 0 40px 20px rgba(232,184,75,0.35), 0 0 100px 50px rgba(232,184,75,0.15);
+      animation: moonPulse 6s ease-in-out infinite;
+      z-index: 1;
+    }
+    @keyframes moonPulse {
+      0%,100% { box-shadow: 0 0 40px 20px rgba(232,184,75,0.35), 0 0 100px 50px rgba(232,184,75,0.12); }
+      50%      { box-shadow: 0 0 55px 28px rgba(232,184,75,0.50), 0 0 130px 65px rgba(232,184,75,0.20); }
+    }
+
+    /* Roof silhouette at bottom of hero */
+    .roofscape {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      z-index: 1;
+      line-height: 0;
+    }
+    .roofscape svg { width: 100%; height: auto; display: block; }
+
+    /* Hero content */
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.5rem;
+      max-width: 800px;
+    }
+
+    /* Logo badge */
+    .logo-ring {
+      width: clamp(100px, 18vw, 150px);
+      aspect-ratio: 1;
+      border-radius: 50%;
+      background: conic-gradient(var(--gold) 0deg, var(--gold2) 90deg, var(--gold) 180deg, #c99a20 270deg, var(--gold) 360deg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 0 4px rgba(232,184,75,0.25), 0 0 40px rgba(232,184,75,0.4);
+      animation: spin 20s linear infinite;
+    }
+    .logo-inner {
+      width: calc(100% - 10px);
+      aspect-ratio: 1;
+      border-radius: 50%;
+      background: var(--deep);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+    }
+    .logo-icon { font-size: clamp(2rem, 5vw, 3.2rem); line-height: 1; }
+    .logo-text-sm {
+      font-size: clamp(0.45rem, 1vw, 0.6rem);
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--gold);
+      font-weight: 700;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .hero-eyebrow {
+      font-size: clamp(0.7rem, 2vw, 0.9rem);
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--gold);
+      font-weight: 600;
+    }
+
+    .hero-title {
+      font-size: clamp(2.4rem, 8vw, 5.5rem);
+      font-weight: 900;
+      line-height: 1.05;
+      text-transform: uppercase;
+      letter-spacing: -0.01em;
+      background: linear-gradient(135deg, #ffffff 30%, var(--gold2) 55%, #ffffff 80%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      background-size: 200% auto;
+      animation: shimmer 4s linear infinite;
+    }
+    @keyframes shimmer {
+      0%   { background-position: 0% center; }
+      100% { background-position: 200% center; }
+    }
+
+    .hero-sub {
+      font-size: clamp(1rem, 2.5vw, 1.4rem);
+      color: var(--cloud);
+      max-width: 540px;
+      line-height: 1.6;
+    }
+
+    /* ── Countdown ────────────────────────────────── */
+    .countdown-wrap {
+      display: flex;
+      gap: clamp(0.8rem, 3vw, 2rem);
+      justify-content: center;
+      margin-top: 0.5rem;
+    }
+    .count-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.25rem;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(232,184,75,0.3);
+      border-radius: 12px;
+      padding: clamp(0.6rem, 2vw, 1.1rem) clamp(0.8rem, 3vw, 1.6rem);
+      backdrop-filter: blur(8px);
+      min-width: clamp(60px, 12vw, 90px);
+    }
+    .count-number {
+      font-size: clamp(1.8rem, 5vw, 3rem);
+      font-weight: 800;
+      color: var(--gold);
+      line-height: 1;
+      font-variant-numeric: tabular-nums;
+    }
+    .count-label {
+      font-size: clamp(0.55rem, 1.2vw, 0.7rem);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--dim);
+      font-weight: 600;
+    }
+
+    /* ── CTA Button ──────────────────────────────── */
+    .btn-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.85rem 2.2rem;
+      background: linear-gradient(135deg, var(--gold) 0%, #c99a20 100%);
+      color: #0a0e1a;
+      font-weight: 800;
+      font-size: clamp(0.85rem, 2vw, 1rem);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      text-decoration: none;
+      box-shadow: 0 4px 25px rgba(232,184,75,0.4);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .btn-cta:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 35px rgba(232,184,75,0.55);
+    }
+
+    /* ── Divider ─────────────────────────────────── */
+    .section-divider {
+      width: 60px;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      margin: 0 auto;
+    }
+
+    /* ── Sections ─────────────────────────────────── */
+    section {
+      padding: clamp(4rem, 8vw, 7rem) 1.5rem;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .section-tag {
+      font-size: 0.7rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--gold);
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+    }
+
+    .section-title {
+      font-size: clamp(1.6rem, 4vw, 2.4rem);
+      font-weight: 800;
+      margin-bottom: 1.25rem;
+      line-height: 1.2;
+    }
+
+    /* ── Owner Card ──────────────────────────────── */
+    .owner-section { text-align: center; }
+
+    .owner-card {
+      position: relative;
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.5rem;
+      background: linear-gradient(135deg, rgba(28,35,64,0.9), rgba(10,14,26,0.95));
+      border: 1px solid rgba(232,184,75,0.35);
+      border-radius: 24px;
+      padding: clamp(2rem, 5vw, 3.5rem) clamp(2rem, 6vw, 4rem);
+      max-width: 560px;
+      margin: 0 auto;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(232,184,75,0.1) inset;
+      overflow: hidden;
+    }
+    .owner-card::before {
+      content: '';
+      position: absolute;
+      top: -60px; left: -60px;
+      width: 200px; height: 200px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(232,184,75,0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .avatar {
+      width: clamp(90px, 18vw, 130px);
+      aspect-ratio: 1;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--slate), #2a3560);
+      border: 3px solid var(--gold);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: clamp(2.5rem, 5vw, 3.5rem);
+      box-shadow: 0 0 0 6px rgba(232,184,75,0.15);
+      flex-shrink: 0;
+    }
+
+    .owner-name {
+      font-size: clamp(1.4rem, 4vw, 2rem);
+      font-weight: 900;
+      letter-spacing: -0.01em;
+      color: var(--white);
+    }
+    .owner-title-badge {
+      display: inline-block;
+      background: linear-gradient(135deg, var(--gold), #c99a20);
+      color: #0a0e1a;
+      font-size: clamp(0.65rem, 1.5vw, 0.8rem);
+      font-weight: 800;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 0.3rem 1rem;
+      border-radius: 50px;
+      margin-bottom: 0.5rem;
+    }
+    .owner-bio {
+      font-size: clamp(0.9rem, 2vw, 1.05rem);
+      color: var(--cloud);
+      line-height: 1.7;
+      max-width: 420px;
+    }
+
+    /* Contact links */
+    .contact-links {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      width: 100%;
+      max-width: 340px;
+    }
+    .contact-link {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      padding: 0.85rem 1.25rem;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px;
+      text-decoration: none;
+      color: var(--white);
+      font-size: clamp(0.85rem, 2vw, 0.95rem);
+      font-weight: 500;
+      transition: background 0.2s, border-color 0.2s, transform 0.2s;
+    }
+    .contact-link:hover {
+      background: rgba(232,184,75,0.12);
+      border-color: rgba(232,184,75,0.5);
+      transform: translateX(4px);
+    }
+    .contact-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+    .icon-email { background: linear-gradient(135deg, #3a7bd5, #2060c0); }
+    .icon-phone { background: linear-gradient(135deg, #27ae60, #1e8a4a); }
+
+    /* ── Developer Note ──────────────────────────── */
+    .dev-section {
+      border-top: 1px solid rgba(255,255,255,0.07);
+      padding-top: clamp(3rem, 6vw, 5rem);
+    }
+
+    .dev-card {
+      display: flex;
+      align-items: flex-start;
+      gap: 1.5rem;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px;
+      padding: 1.75rem;
+      max-width: 620px;
+    }
+    .dev-avatar {
+      width: 56px;
+      height: 56px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--accent), #2060c0);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      flex-shrink: 0;
+    }
+    .dev-name {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--white);
+      margin-bottom: 0.2rem;
+    }
+    .dev-role {
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      font-weight: 600;
+      margin-bottom: 0.6rem;
+    }
+    .dev-note {
+      font-size: 0.9rem;
+      color: var(--dim);
+      line-height: 1.65;
+    }
+
+    /* ── Progress Bar ────────────────────────────── */
+    .progress-section { text-align: center; }
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      color: var(--dim);
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+    }
+    .progress-bar-bg {
+      height: 8px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 50px;
+      overflow: hidden;
+      margin-bottom: 0.6rem;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      border-radius: 50px;
+      background: linear-gradient(90deg, var(--accent), var(--gold));
+      width: 0%;
+      transition: width 1.8s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+    .progress-items {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      justify-content: center;
+      margin-top: 1.5rem;
+    }
+    .progress-item {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.8rem;
+      color: var(--dim);
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 50px;
+      padding: 0.35rem 0.85rem;
+    }
+    .progress-item.done { color: #4ade80; border-color: rgba(74,222,128,0.25); }
+    .progress-item.active { color: var(--gold); border-color: rgba(232,184,75,0.3); }
+
+    /* ── Notification signup ─────────────────────── */
+    .notify-section { text-align: center; }
+    .notify-form {
+      display: flex;
+      gap: 0.6rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 1.5rem;
+    }
+    .notify-input {
+      flex: 1;
+      min-width: 220px;
+      max-width: 340px;
+      padding: 0.85rem 1.2rem;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 50px;
+      color: var(--white);
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .notify-input::placeholder { color: rgba(255,255,255,0.35); }
+    .notify-input:focus { border-color: var(--gold); }
+    .notify-btn {
+      padding: 0.85rem 1.8rem;
+      background: linear-gradient(135deg, var(--gold) 0%, #c99a20 100%);
+      color: #0a0e1a;
+      font-weight: 800;
+      font-size: 0.9rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .notify-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(232,184,75,0.4); }
+    .notify-success {
+      display: none;
+      margin-top: 1rem;
+      color: #4ade80;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    /* ── Services Preview ────────────────────────── */
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+    .service-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 16px;
+      padding: 1.5rem 1.25rem;
+      text-align: center;
+      transition: border-color 0.3s, background 0.3s, transform 0.3s;
+    }
+    .service-card:hover {
+      border-color: rgba(232,184,75,0.35);
+      background: rgba(232,184,75,0.05);
+      transform: translateY(-4px);
+    }
+    .service-emoji { font-size: 2rem; margin-bottom: 0.75rem; display: block; }
+    .service-name { font-size: 0.95rem; font-weight: 700; margin-bottom: 0.4rem; }
+    .service-desc { font-size: 0.8rem; color: var(--dim); line-height: 1.5; }
+
+    /* ── Footer ──────────────────────────────────── */
+    footer {
+      border-top: 1px solid rgba(255,255,255,0.06);
+      text-align: center;
+      padding: 2.5rem 1.5rem;
+      color: rgba(255,255,255,0.3);
+      font-size: 0.8rem;
+      line-height: 1.8;
+    }
+    footer strong { color: rgba(255,255,255,0.55); }
+
+    /* ── Floating particles ──────────────────────── */
+    .particle {
+      position: fixed;
+      width: 4px; height: 4px;
+      border-radius: 50%;
+      background: var(--gold);
+      opacity: 0;
+      pointer-events: none;
+      z-index: 0;
+      animation: floatUp var(--dur, 8s) var(--delay, 0s) ease-in infinite;
+    }
+    @keyframes floatUp {
+      0%   { opacity: 0; transform: translateY(0) scale(0.5); }
+      10%  { opacity: 0.7; }
+      80%  { opacity: 0.2; }
+      100% { opacity: 0; transform: translateY(-90vh) scale(0); }
+    }
+
+    /* ── Scroll reveal ───────────────────────────── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: none;
+    }
+
+    /* ── Responsive tweaks ───────────────────────── */
+    @media (max-width: 480px) {
+      .moon { top: 4%; right: 5%; }
+      .dev-card { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="stars-canvas"></canvas>
+
+<!-- Floating gold particles -->
+<div id="particles"></div>
+
+<div class="page">
+
+  <!-- ── HERO ──────────────────────────────────────── -->
+  <div class="hero">
+    <div class="moon"></div>
+
+    <div class="hero-content">
+      <!-- Logo -->
+      <div class="logo-ring">
+        <div class="logo-inner">
+          <span class="logo-icon">🏠</span>
+          <span class="logo-text-sm">Heavenly</span>
+        </div>
+      </div>
+
+      <div class="hero-eyebrow">Something great is on the way</div>
+
+      <h1 class="hero-title">Heavenly<br>Roofing LLC</h1>
+
+      <p class="hero-sub">
+        A premium roofing company built on quality craftsmanship, integrity, and a commitment to protecting what matters most — your home.
+      </p>
+
+      <!-- Countdown -->
+      <div class="countdown-wrap">
+        <div class="count-box">
+          <span class="count-number" id="cd-days">00</span>
+          <span class="count-label">Days</span>
+        </div>
+        <div class="count-box">
+          <span class="count-number" id="cd-hours">00</span>
+          <span class="count-label">Hours</span>
+        </div>
+        <div class="count-box">
+          <span class="count-number" id="cd-mins">00</span>
+          <span class="count-label">Mins</span>
+        </div>
+        <div class="count-box">
+          <span class="count-number" id="cd-secs">00</span>
+          <span class="count-label">Secs</span>
+        </div>
+      </div>
+
+      <a href="#contact" class="btn-cta">
+        📞 Get In Touch Now
+      </a>
+    </div>
+
+    <!-- Roofscape silhouette -->
+    <div class="roofscape">
+      <svg viewBox="0 0 1440 180" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+        <path d="M0,180 L0,120 L60,80 L120,120 L140,100 L160,50 L180,100 L200,120 L260,80 L280,90 L300,60 L320,90 L340,80 L400,120 L440,90 L460,55 L480,90 L500,80 L560,120 L600,95 L620,50 L640,95 L680,70 L700,110 L750,80 L780,115 L820,75 L840,40 L860,75 L900,110 L940,85 L960,55 L980,85 L1020,100 L1060,65 L1080,30 L1100,65 L1140,95 L1180,70 L1200,100 L1240,75 L1280,105 L1320,80 L1360,110 L1400,85 L1440,120 L1440,180 Z"
+              fill="#060911"/>
+        <!-- chimney -->
+        <rect x="450" y="30" width="20" height="30" fill="#060911"/>
+        <rect x="447" y="28" width="26" height="6" fill="#060911"/>
+        <rect x="1070" y="10" width="22" height="30" fill="#060911"/>
+        <rect x="1067" y="8" width="28" height="6" fill="#060911"/>
+        <!-- windows glow -->
+        <rect x="270" y="95" width="12" height="9" rx="1" fill="rgba(232,184,75,0.7)"/>
+        <rect x="610" y="70" width="12" height="9" rx="1" fill="rgba(232,184,75,0.5)"/>
+        <rect x="850" y="55" width="12" height="9" rx="1" fill="rgba(232,184,75,0.7)"/>
+        <rect x="1090" y="45" width="12" height="9" rx="1" fill="rgba(232,184,75,0.6)"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- ── SERVICES PREVIEW ───────────────────────────── -->
+  <section class="reveal">
+    <p class="section-tag">What We Do</p>
+    <h2 class="section-title" style="text-align:center">Premium Roofing Services<br><span style="color:var(--gold)">Coming to Your Community</span></h2>
+    <div class="section-divider"></div>
+    <div class="services-grid" style="margin-top:2.5rem">
+      <div class="service-card">
+        <span class="service-emoji">🔨</span>
+        <div class="service-name">Roof Replacement</div>
+        <div class="service-desc">Full roof teardown &amp; installation with top-grade materials built to last decades.</div>
+      </div>
+      <div class="service-card">
+        <span class="service-emoji">🔍</span>
+        <div class="service-name">Roof Inspection</div>
+        <div class="service-desc">Thorough assessments to catch issues early — before they turn into costly repairs.</div>
+      </div>
+      <div class="service-card">
+        <span class="service-emoji">🛠️</span>
+        <div class="service-name">Roof Repair</div>
+        <div class="service-desc">Fast, reliable fixes for leaks, storm damage, and wear — protecting your investment.</div>
+      </div>
+      <div class="service-card">
+        <span class="service-emoji">🌩️</span>
+        <div class="service-name">Storm Damage</div>
+        <div class="service-desc">Emergency response and insurance claim assistance when you need it most.</div>
+      </div>
+      <div class="service-card">
+        <span class="service-emoji">🏢</span>
+        <div class="service-name">Commercial</div>
+        <div class="service-desc">Scalable roofing solutions for commercial properties, HOAs, and multi-unit buildings.</div>
+      </div>
+      <div class="service-card">
+        <span class="service-emoji">✨</span>
+        <div class="service-name">Gutters &amp; More</div>
+        <div class="service-desc">Gutter installation, cleaning, and exterior finishing to complete your home's protection.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── PROGRESS ──────────────────────────────────── -->
+  <section class="progress-section reveal">
+    <p class="section-tag">Development Status</p>
+    <h2 class="section-title">We're Building Something<br><span style="color:var(--gold)">Worth the Wait</span></h2>
+    <div class="section-divider" style="margin-bottom:2rem"></div>
+    <div style="max-width:520px;margin:0 auto;">
+      <div class="progress-label">
+        <span>Website Progress</span>
+        <span id="pct">0%</span>
+      </div>
+      <div class="progress-bar-bg">
+        <div class="progress-bar-fill" id="prog-fill"></div>
+      </div>
+      <div class="progress-items">
+        <span class="progress-item done">✅ Brand Identity</span>
+        <span class="progress-item done">✅ Service Planning</span>
+        <span class="progress-item done">✅ Domain &amp; Hosting</span>
+        <span class="progress-item active">⚡ Website Design</span>
+        <span class="progress-item active">⚡ Content Writing</span>
+        <span class="progress-item">🔜 SEO &amp; Launch</span>
+        <span class="progress-item">🔜 Go Live!</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── OWNER CARD ─────────────────────────────────── -->
+  <section id="contact" class="owner-section reveal">
+    <p class="section-tag">The Team</p>
+    <h2 class="section-title">Meet the Owner</h2>
+    <div class="section-divider" style="margin-bottom:2.5rem"></div>
+
+    <div class="owner-card">
+      <div class="avatar">👷</div>
+      <div>
+        <div class="owner-title-badge">Owner &amp; Operator</div>
+        <div class="owner-name">Roberto C. Rodriguez</div>
+      </div>
+      <p class="owner-bio">
+        Roberto brings hands-on expertise and an unwavering dedication to quality to every roofing project. As the founder of Heavenly Roofing LLC, he is personally committed to delivering premium craftsmanship, honest pricing, and a superior customer experience — roof by roof, home by home.
+      </p>
+      <div class="contact-links">
+        <a href="mailto:Politroche13@gmail.com" class="contact-link">
+          <span class="contact-icon icon-email">✉️</span>
+          <div>
+            <div style="font-size:0.7rem;color:var(--dim);margin-bottom:2px;text-transform:uppercase;letter-spacing:0.1em">Email</div>
+            Politroche13@gmail.com
+          </div>
+        </a>
+        <a href="tel:+14059737090" class="contact-link">
+          <span class="contact-icon icon-phone">📞</span>
+          <div>
+            <div style="font-size:0.7rem;color:var(--dim);margin-bottom:2px;text-transform:uppercase;letter-spacing:0.1em">Call or Text</div>
+            +1 (405) 973-7090
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── NOTIFY ─────────────────────────────────────── -->
+  <section class="notify-section reveal">
+    <p class="section-tag">Stay in the Loop</p>
+    <h2 class="section-title">Be the First to Know<br><span style="color:var(--gold)">When We Launch</span></h2>
+    <p style="color:var(--dim);max-width:440px;margin:0 auto 0.5rem;line-height:1.6;font-size:0.95rem;">
+      Drop your email and we'll notify you the moment the full website goes live. No spam — ever.
+    </p>
+    <div class="section-divider" style="margin-bottom:0"></div>
+    <div class="notify-form">
+      <input type="email" class="notify-input" id="notify-email" placeholder="your@email.com" />
+      <button class="notify-btn" onclick="submitNotify()">Notify Me</button>
+    </div>
+    <p class="notify-success" id="notify-success">🎉 You're on the list! We'll reach out when we're ready.</p>
+  </section>
+
+  <!-- ── DEVELOPER NOTE ─────────────────────────────── -->
+  <section class="dev-section reveal" style="padding-bottom:3rem">
+    <p class="section-tag">Behind the Build</p>
+    <div class="dev-card">
+      <div class="dev-avatar">💻</div>
+      <div>
+        <div class="dev-name">Pedro M. Dominguez</div>
+        <div class="dev-role">Web Developer</div>
+        <p class="dev-note">
+          This website is currently being designed and developed by Pedro M. Dominguez. The official Heavenly Roofing LLC website is on its way — with a full suite of features to help you get quotes, learn about services, and connect with Roberto's team. Check back soon!
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── FOOTER ─────────────────────────────────────── -->
+  <footer>
+    <div style="font-size:1.2rem;margin-bottom:0.5rem">🏠</div>
+    <strong>Heavenly Roofing LLC</strong><br>
+    Website under construction — launching soon.<br><br>
+    Questions? Contact Roberto directly:<br>
+    <a href="mailto:Politroche13@gmail.com" style="color:var(--gold);text-decoration:none">Politroche13@gmail.com</a>
+    &nbsp;·&nbsp;
+    <a href="tel:+14059737090" style="color:var(--gold);text-decoration:none">+1 (405) 973-7090</a><br><br>
+    <span style="font-size:0.7rem;opacity:0.4">© 2026 Heavenly Roofing LLC. All rights reserved. Developed by Pedro M. Dominguez.</span>
+  </footer>
+
+</div><!-- /.page -->
+
+<script>
+  /* ── Stars Canvas ────────────────────────────────── */
+  (function () {
+    const canvas = document.getElementById('stars-canvas');
+    const ctx = canvas.getContext('2d');
+    let stars = [];
+    let W, H;
+
+    function resize() {
+      W = canvas.width  = window.innerWidth;
+      H = canvas.height = window.innerHeight;
+    }
+    function initStars() {
+      stars = [];
+      const count = Math.floor((W * H) / 3000);
+      for (let i = 0; i < count; i++) {
+        stars.push({
+          x: Math.random() * W,
+          y: Math.random() * H,
+          r: Math.random() * 1.6 + 0.2,
+          a: Math.random(),
+          speed: Math.random() * 0.008 + 0.002,
+          phase: Math.random() * Math.PI * 2,
+        });
+      }
+    }
+    function draw(t) {
+      ctx.clearRect(0, 0, W, H);
+      stars.forEach(s => {
+        const alpha = 0.3 + 0.7 * (0.5 + 0.5 * Math.sin(t * s.speed + s.phase));
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255,255,255,${alpha})`;
+        ctx.fill();
+      });
+      requestAnimationFrame(draw);
+    }
+    resize();
+    initStars();
+    window.addEventListener('resize', () => { resize(); initStars(); });
+    requestAnimationFrame(draw);
+  })();
+
+  /* ── Floating Particles ──────────────────────────── */
+  (function () {
+    const container = document.getElementById('particles');
+    for (let i = 0; i < 18; i++) {
+      const p = document.createElement('div');
+      p.className = 'particle';
+      p.style.left = Math.random() * 100 + 'vw';
+      p.style.bottom = '-10px';
+      p.style.setProperty('--dur', (6 + Math.random() * 10) + 's');
+      p.style.setProperty('--delay', (Math.random() * 8) + 's');
+      p.style.width = p.style.height = (2 + Math.random() * 4) + 'px';
+      container.appendChild(p);
+    }
+  })();
+
+  /* ── Countdown ───────────────────────────────────── */
+  (function () {
+    // Launch date: 60 days from now
+    const launch = new Date();
+    launch.setDate(launch.getDate() + 60);
+
+    function pad(n) { return String(n).padStart(2, '0'); }
+    function tick() {
+      const diff = launch - Date.now();
+      if (diff <= 0) {
+        document.getElementById('cd-days').textContent  = '00';
+        document.getElementById('cd-hours').textContent = '00';
+        document.getElementById('cd-mins').textContent  = '00';
+        document.getElementById('cd-secs').textContent  = '00';
+        return;
+      }
+      const days  = Math.floor(diff / 86400000);
+      const hours = Math.floor((diff % 86400000) / 3600000);
+      const mins  = Math.floor((diff % 3600000) / 60000);
+      const secs  = Math.floor((diff % 60000) / 1000);
+      document.getElementById('cd-days').textContent  = pad(days);
+      document.getElementById('cd-hours').textContent = pad(hours);
+      document.getElementById('cd-mins').textContent  = pad(mins);
+      document.getElementById('cd-secs').textContent  = pad(secs);
+    }
+    tick();
+    setInterval(tick, 1000);
+  })();
+
+  /* ── Progress Bar ────────────────────────────────── */
+  (function () {
+    const fill = document.getElementById('prog-fill');
+    const pct  = document.getElementById('pct');
+    const target = 65;
+    const io = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          fill.style.width = target + '%';
+          let current = 0;
+          const step = () => {
+            current = Math.min(current + 1, target);
+            pct.textContent = current + '%';
+            if (current < target) requestAnimationFrame(step);
+          };
+          requestAnimationFrame(step);
+          io.disconnect();
+        }
+      });
+    }, { threshold: 0.4 });
+    io.observe(fill);
+  })();
+
+  /* ── Scroll Reveal ───────────────────────────────── */
+  (function () {
+    const els = document.querySelectorAll('.reveal');
+    const io = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          io.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.12 });
+    els.forEach(el => io.observe(el));
+  })();
+
+  /* ── Notify Form ─────────────────────────────────── */
+  function submitNotify() {
+    const input = document.getElementById('notify-email');
+    const success = document.getElementById('notify-success');
+    const email = input.value.trim();
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      input.style.borderColor = '#f87171';
+      input.focus();
+      setTimeout(() => { input.style.borderColor = ''; }, 1800);
+      return;
+    }
+    // In a real implementation this would POST to a backend or service
+    input.style.display = 'none';
+    document.querySelector('.notify-btn').style.display = 'none';
+    success.style.display = 'block';
+  }
+
+  /* ── Keyboard: Enter on notify input ─────────────── */
+  document.getElementById('notify-email').addEventListener('keydown', e => {
+    if (e.key === 'Enter') submitNotify();
+  });
+</script>
+</body>
+</html>
