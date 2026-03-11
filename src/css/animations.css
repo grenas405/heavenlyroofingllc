@@ -1,5 +1,14 @@
 /* src/css/animations.css */
 
+/* ─── Anime.js gate ───────────────────────────────── */
+/* When JS runs successfully, suppress the CSS hero entrance
+   animations (Anime.js takes over). CSS fallback still fires
+   if JS is unavailable. */
+.anime-ready .hero-content > * {
+    animation: none !important;
+    opacity: 1;
+}
+
 /* ─── Hero Visual Layer ───────────────────────────── */
 .hero-visual {
     position: absolute;
@@ -11,7 +20,7 @@
     overflow: hidden;
 }
 
-/* Atmospheric glow */
+/* Atmospheric crimson glow */
 .sunbeam {
     position: absolute;
     top: -20%;
@@ -19,8 +28,8 @@
     width: 140%;
     height: 140%;
     background:
-        radial-gradient(ellipse at 25% 35%, rgba(30, 58, 95, 0.7) 0%, transparent 55%),
-        radial-gradient(ellipse at 75% 65%, rgba(245, 158, 11, 0.07) 0%, transparent 50%);
+        radial-gradient(ellipse at 30% 40%, rgba(139, 0, 0, 0.55) 0%, transparent 60%),
+        radial-gradient(ellipse at 72% 70%, rgba(192, 57, 43, 0.12) 0%, transparent 50%);
     animation: atmosphericPulse 14s ease-in-out infinite;
     z-index: 1;
 }
@@ -38,7 +47,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(255, 255, 255, 0.025);
+    background: rgba(255, 100, 100, 0.03);
     opacity: 0;
     z-index: 5;
     animation: subtleLightning 18s linear infinite;
@@ -49,13 +58,13 @@
     92%, 94% { opacity: 1; }
 }
 
-/* Clouds */
+/* Dark red storm clouds */
 .cloud {
     position: absolute;
     border-radius: 100px;
-    opacity: 0.06;
+    opacity: 0.08;
     filter: blur(60px);
-    background: #7ea5d4;
+    background: #6b1010;
 }
 
 .cloud-1 {
@@ -84,7 +93,8 @@
     100% { transform: translateX(-120vw); }
 }
 
-/* ─── Hero Content Fade-in ────────────────────────── */
+/* ─── Hero Content CSS Fallback (no JS) ──────────── */
+/* Only active when .anime-ready is NOT on body */
 .hero-content > * {
     opacity: 0;
     animation: fadeUp 0.8s ease-out forwards;
@@ -106,7 +116,7 @@
     }
 }
 
-/* ─── Scroll Reveal (applied via JS) ─────────────── */
+/* ─── Scroll Reveal (about-card, contact-method) ─── */
 .reveal {
     opacity: 0;
     transform: translateY(28px);
