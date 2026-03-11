@@ -1,23 +1,19 @@
-# @CHANGES.md
-# Heavenly Roofing LLC - Project Initialization
+## [2026-03-11] - Rebranding and Storytelling Update
 
-## [2026-03-11] - Initial Frontend Implementation
+### Visual Rebranding
+- **Stormy Theme:** Transitioned the color palette to Dark Red (`#8b0000`) and Black (`#0a0a0a`) for a high-contrast, industrial, and battle-tested aesthetic.
+- **Improved Typography:** Implemented heavy, uppercase headings to communicate strength and durability.
+- **UI Refresh:** Shifted to blocky, industrial-style buttons and cards, removing the previous soft rounded corners for a tougher look.
 
-### Core Infrastructure
-- **Project Scaffolding:** Established a Unix-style modular directory structure (`src/css`, `src/js`, `src/assets`, `public`).
-- **Git Configuration:** Implemented a comprehensive `.gitignore` protecting environment secrets and local IDE configurations.
-- **Documentation:** Created a `README.md` outlining the technical stack and ownership details for Roberto C. Rodriguez.
+### Enhanced Animations
+- **Oklahoma Storm Motion:** Added a subtle "Lightning Flash" effect to the Hero section to represent Oklahoma's powerful weather.
+- **Pulsing Glow:** Replaced the spinning sunbeams with a pulsing red atmospheric glow.
+- **Storm Clouds:** Updated cloud visuals to be darker, blurrier, and slower-moving, creating a more dramatic backdrop.
 
-### Design & Aesthetics
-- **Heavenly Theme:** Developed a "Heavenly" visual identity using a blue-to-purple gradient palette (`#3498db` to `#8e44ad`).
-- **Hero Animations:** Added CSS-driven floating clouds and rotating sunbeams to create an engaging, ethereal atmosphere.
-- **Responsive Layout:** Implemented a mobile-first `layout.css` with a sticky header and flexible container systems.
-
-### Technical Features
-- **Modular CSS:** Split styling into `layout.css` (structure), `main.css` (theme), and `animations.css` (motion).
-- **ES Modules:** Implemented JavaScript using `type="module"`, separating utility functions (`utils.js`) from orchestration logic (`main.js`).
-- **Interactivity:** 
-  - Smooth-scrolling for navigation links.
-  - Scroll-aware header transitions.
-  - Intersection Observer-based fade-in animations for service cards.
-- **Ownership Branding:** Integrated "Owned and Operated by Roberto C. Rodriguez" across the UI and documentation.
+### Content & Local Context
+- **Personal Story:** Added a new "The Man Behind the Shield" section detailing Roberto C. Rodriguez's local roots.
+  - Highlighted his graduation from **Southeast High School**.
+  - Mentioned his professional background at **Mathis Brothers Furniture Call Center**.
+  - Emphasized his commitment to the South OKC community.
+- **OKC Branding:** Integrated localized messaging ("OKC Proud," "Battle-Tested," "Class 4 Impact Resistance") to appeal to Oklahoma homeowners concerned about storm damage.
+- **Call-to-Action:** Enhanced the contact section with a clear phone-first approach.

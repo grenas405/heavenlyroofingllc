@@ -1,71 +1,113 @@
 /* src/css/main.css */
 .hero {
     position: relative;
-    height: 600px;
-    background: linear-gradient(135deg, #3498db, #8e44ad);
+    height: 700px;
+    background: linear-gradient(135deg, #1a1a1a, #4a0000);
     color: #fff;
     display: flex;
     align-items: center;
     justify-content: center;
     text-align: center;
     overflow: hidden;
+    border-bottom: 5px solid var(--primary-color);
 }
 
 .hero-content {
     z-index: 10;
-    max-width: 800px;
+    max-width: 900px;
     padding: 20px;
+    text-shadow: 2px 2px 10px rgba(0,0,0,0.8);
 }
 
 .hero-title {
-    font-size: 3.5rem;
-    margin-bottom: 20px;
-    font-weight: 800;
+    font-size: 4rem;
+    margin-bottom: 10px;
+    font-weight: 900;
+    text-transform: uppercase;
 }
 
 .hero-subtitle {
-    font-size: 1.5rem;
-    margin-bottom: 10px;
-    opacity: 0.9;
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+    color: var(--accent-color);
+    letter-spacing: 1px;
 }
 
-.owner {
-    font-style: italic;
-    opacity: 0.8;
-    margin-bottom: 30px;
+.owner-tagline {
+    font-size: 1.2rem;
+    font-weight: 300;
+    margin-bottom: 40px;
+    opacity: 0.9;
 }
 
 .btn {
     display: inline-block;
-    padding: 15px 35px;
-    border-radius: 50px;
+    padding: 18px 45px;
+    border-radius: 5px; /* Blocky, industrial feel */
     text-decoration: none;
     font-weight: bold;
-    transition: transform 0.3s, box-shadow 0.3s;
+    text-transform: uppercase;
+    transition: all 0.4s;
     cursor: pointer;
 }
 
 .btn-primary {
-    background-color: var(--accent-color);
+    background-color: var(--primary-color);
     color: #fff;
-    box-shadow: 0 4px 15px rgba(243, 156, 18, 0.4);
+    border: 2px solid var(--accent-color);
 }
 
 .btn-primary:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 20px rgba(243, 156, 18, 0.6);
+    background-color: var(--accent-color);
+    transform: scale(1.05);
+    box-shadow: 0 0 20px var(--accent-color);
+}
+
+.about-roberto {
+    padding: 100px 0;
+    background-color: #050505;
+}
+
+.about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 50px;
+    align-items: center;
+}
+
+.about-text h3 {
+    font-size: 2.5rem;
+    color: var(--accent-color);
+    margin-bottom: 25px;
+}
+
+.about-text p {
+    margin-bottom: 20px;
+    font-size: 1.1rem;
+    color: #ddd;
 }
 
 .services {
     padding: 100px 0;
-    background-color: #f8f9fa;
+    background-color: #0a0a0a;
 }
 
 .section-title {
     text-align: center;
-    font-size: 2.5rem;
+    font-size: 3rem;
     margin-bottom: 60px;
-    color: var(--primary-color);
+    color: #fff;
+    text-transform: uppercase;
+    position: relative;
+}
+
+.section-title::after {
+    content: '';
+    display: block;
+    width: 100px;
+    height: 5px;
+    background: var(--accent-color);
+    margin: 20px auto 0;
 }
 
 .service-grid {
@@ -75,24 +117,26 @@
 }
 
 .service-card {
-    background: #fff;
+    background: #111;
     padding: 40px;
-    border-radius: 15px;
+    border-radius: 8px;
     text-align: center;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-    transition: transform 0.3s;
+    border: 1px solid #333;
+    transition: all 0.3s;
 }
 
 .service-card:hover {
     transform: translateY(-10px);
+    border-color: var(--accent-color);
+    background: #1a1a1a;
 }
 
 .service-card h4 {
-    font-size: 1.5rem;
+    font-size: 1.6rem;
     margin: 20px 0 15px;
-    color: var(--text-color);
+    color: #fff;
 }
 
 .service-card p {
-    color: #7f8c8d;
+    color: #bbb;
 }
