@@ -211,16 +211,23 @@ document.addEventListener('DOMContentLoaded', () => {
     // ── Developer Note Typewriter Effect ────────────
     const devNoteElement = document.getElementById('dev-note-text');
     if (devNoteElement) {
-        const text = "Lead Developer Pedro M. Dominguez is currently engineering a suite of modern, high-performance features to elevate your digital experience. The next generation of Heavenly Roofing LLC is under construction and will be unveiled shortly.";
+        const text = "Lead Developer Pedro M. Dominguez is currently engineering a suite of modern features to elevate your digital experience. The next generation of Heavenly Roofing LLC is under construction and will be unveiled shortly.";
         let i = 0;
+        let isTyping = false;
         const speed = 35; // typing speed in ms
 
         function typeWriter() {
-            if (i < text.length) {
-                devNoteElement.textContent += text.charAt(i);
-                i++;
-                setTimeout(typeWriter, speed);
+            if (isTyping) return;
+            isTyping = true;
+
+            function next() {
+                if (i < text.length) {
+                    devNoteElement.textContent += text.charAt(i);
+                    i++;
+                    setTimeout(next, speed);
+                }
             }
+            next();
         }
 
         // Use IntersectionObserver to start typing when visible
@@ -231,7 +238,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     devNoteObserver.disconnect();
                 }
             });
-        }, { threshold: 0.1 });
+        }, { threshold: 0.05 });
         devNoteObserver.observe(devNoteElement);
+
+        // Failsafe: Start typing after 5 seconds if not triggered by scroll
+        setTimeout(() => {
+            if (!isTyping) {
+                typeWriter();
+                devNoteObserver.disconnect();
+            }
+        }, 5000);
     }
 });

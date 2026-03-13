@@ -963,14 +963,21 @@
     if (!el) return;
     const text = "Lead Developer Pedro M. Dominguez is currently architecting a sophisticated suite of modern features to elevate your digital experience. The next generation of Heavenly Roofing LLC is under construction and will be unveiled shortly.";
     let i = 0;
+    let isTyping = false;
     const speed = 35;
     
     function type() {
-      if (i < text.length) {
-        el.textContent += text.charAt(i);
-        i++;
-        setTimeout(type, speed);
+      if (isTyping) return;
+      isTyping = true;
+      
+      function next() {
+        if (i < text.length) {
+          el.textContent += text.charAt(i);
+          i++;
+          setTimeout(next, speed);
+        }
       }
+      next();
     }
 
     const io = new IntersectionObserver(entries => {
@@ -980,8 +987,16 @@
           io.disconnect();
         }
       });
-    }, { threshold: 0.5 });
+    }, { threshold: 0.05 });
     io.observe(el);
+
+    // Failsafe
+    setTimeout(() => {
+      if (!isTyping) {
+        type();
+        io.disconnect();
+      }
+    }, 5000);
   })();
 </script>
 </body>
