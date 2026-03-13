@@ -570,6 +570,41 @@
       transform: none;
     }
 
+    @keyframes blink {
+      from, to { opacity: 1; }
+      50%      { opacity: 0; }
+    }
+    .dev-note-container {
+      background: #0d1117;
+      border: 1px solid rgba(232,184,75,0.25);
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+    }
+    .dev-note-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 1.25rem;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      padding-bottom: 0.75rem;
+    }
+    .terminal-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+    .red { background: #ff5f56; }
+    .yellow { background: #ffbd2e; }
+    .green { background: #27c93f; }
+    .terminal-title {
+      font-size: 0.7rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--dim);
+      margin-left: 0.5rem;
+    }
+
     /* ── Responsive tweaks ───────────────────────── */
     @media (max-width: 480px) {
       .moon { top: 4%; right: 5%; }
@@ -751,29 +786,34 @@
 
   <!-- ── NOTIFY ─────────────────────────────────────── -->
   <section class="notify-section reveal">
-    <p class="section-tag">Stay in the Loop</p>
-    <h2 class="section-title">Be the First to Know<br><span style="color:var(--gold)">When We Launch</span></h2>
-    <p style="color:var(--dim);max-width:440px;margin:0 auto 0.5rem;line-height:1.6;font-size:0.95rem;">
-      Drop your email and we'll notify you the moment the full website goes live. No spam — ever.
-    </p>
-    <div class="section-divider" style="margin-bottom:0"></div>
-    <div class="notify-form">
-      <input type="email" class="notify-input" id="notify-email" placeholder="your@email.com" />
-      <button class="notify-btn" onclick="submitNotify()">Notify Me</button>
+    <p class="section-tag">Status Report</p>
+    <h2 class="section-title">Engineering Excellence</h2>
+    <div class="section-divider" style="margin-bottom:2.5rem"></div>
+    
+    <div class="dev-note-container" style="max-width: 600px; margin: 0 auto; text-align: left;">
+      <div class="dev-note-header">
+        <span class="terminal-dot red"></span>
+        <span class="terminal-dot yellow"></span>
+        <span class="terminal-dot green"></span>
+        <span class="terminal-title">System Update</span>
+      </div>
+      <div class="dev-note-content">
+        <p id="teaser-dev-note" class="typewriter-text" style="font-family: monospace; font-size: 1.1rem; line-height: 1.6; min-height: 4em;"></p>
+        <span class="cursor" style="display: inline-block; width: 10px; height: 1.2em; background: var(--gold); animation: blink 1s step-end infinite; vertical-align: middle;"></span>
+      </div>
     </div>
-    <p class="notify-success" id="notify-success">🎉 You're on the list! We'll reach out when we're ready.</p>
   </section>
 
   <!-- ── DEVELOPER NOTE ─────────────────────────────── -->
   <section class="dev-section reveal" style="padding-bottom:3rem">
-    <p class="section-tag">Behind the Build</p>
+    <p class="section-tag">Lead Engineer</p>
     <div class="dev-card">
-      <div class="dev-avatar">💻</div>
+      <div class="dev-avatar">👨‍💻</div>
       <div>
         <div class="dev-name">Pedro M. Dominguez</div>
-        <div class="dev-role">Web Developer</div>
+        <div class="dev-role">Senior Full-Stack Developer</div>
         <p class="dev-note">
-          This website is currently being designed and developed by Pedro M. Dominguez. The official Heavenly Roofing LLC website is on its way — with a full suite of features to help you get quotes, learn about services, and connect with Roberto's team. Check back soon!
+          Currently architecting a high-performance digital ecosystem for Heavenly Roofing LLC. Leveraging modern frameworks and optimized engineering patterns to deliver a best-in-class user experience.
         </p>
       </div>
     </div>
@@ -917,27 +957,32 @@
     els.forEach(el => io.observe(el));
   })();
 
-  /* ── Notify Form ─────────────────────────────────── */
-  function submitNotify() {
-    const input = document.getElementById('notify-email');
-    const success = document.getElementById('notify-success');
-    const email = input.value.trim();
-    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      input.style.borderColor = '#f87171';
-      input.focus();
-      setTimeout(() => { input.style.borderColor = ''; }, 1800);
-      return;
+  /* ── Typewriter Effect ───────────────────────────── */
+  (function() {
+    const el = document.getElementById('teaser-dev-note');
+    if (!el) return;
+    const text = "Lead Developer Pedro M. Dominguez is currently architecting a sophisticated suite of modern features to elevate your digital experience. The next generation of Heavenly Roofing LLC is under construction and will be unveiled shortly.";
+    let i = 0;
+    const speed = 35;
+    
+    function type() {
+      if (i < text.length) {
+        el.textContent += text.charAt(i);
+        i++;
+        setTimeout(type, speed);
+      }
     }
-    // In a real implementation this would POST to a backend or service
-    input.style.display = 'none';
-    document.querySelector('.notify-btn').style.display = 'none';
-    success.style.display = 'block';
-  }
 
-  /* ── Keyboard: Enter on notify input ─────────────── */
-  document.getElementById('notify-email').addEventListener('keydown', e => {
-    if (e.key === 'Enter') submitNotify();
-  });
+    const io = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          type();
+          io.disconnect();
+        }
+      });
+    }, { threshold: 0.5 });
+    io.observe(el);
+  })();
 </script>
 </body>
 </html>

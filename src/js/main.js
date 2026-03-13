@@ -208,23 +208,30 @@ document.addEventListener('DOMContentLoaded', () => {
         revealObserver.observe(el);
     });
 
-    // ── Contact form UX feedback ────────────────────
-    const form = document.getElementById('contact-form');
-    if (form) {
-        form.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const btn = form.querySelector('button[type="submit"]');
-            btn.textContent = 'Request Sent!';
-            btn.disabled = true;
-            btn.style.background = '#22c55e';
-            btn.style.color = '#fff';
-            setTimeout(() => {
-                btn.textContent = 'Send My Request';
-                btn.disabled = false;
-                btn.style.background = '';
-                btn.style.color = '';
-                form.reset();
-            }, 4000);
-        });
+    // ── Developer Note Typewriter Effect ────────────
+    const devNoteElement = document.getElementById('dev-note-text');
+    if (devNoteElement) {
+        const text = "Lead Developer Pedro M. Dominguez is currently engineering a suite of modern, high-performance features to elevate your digital experience. The next generation of Heavenly Roofing LLC is under construction and will be unveiled shortly.";
+        let i = 0;
+        const speed = 35; // typing speed in ms
+
+        function typeWriter() {
+            if (i < text.length) {
+                devNoteElement.textContent += text.charAt(i);
+                i++;
+                setTimeout(typeWriter, speed);
+            }
+        }
+
+        // Use IntersectionObserver to start typing when visible
+        const devNoteObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    typeWriter();
+                    devNoteObserver.disconnect();
+                }
+            });
+        }, { threshold: 0.1 });
+        devNoteObserver.observe(devNoteElement);
     }
 });
